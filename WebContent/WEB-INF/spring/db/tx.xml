@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<!-- ========================= DATASOURCE DEFINITION ========================= -->
+
+	<!-- Transaction manager for a single JDBC DataSource (alternative to JTA) -->
+	<beans:bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		p:dataSource-ref="dataSource" />
+	<!-- ========================= TX OBJECT DEFINITIONS ========================= -->
+
+	<!-- 用于代替 ProxyMethod 实施tx异常的捕捉 和 把异常转成ErrorInfo给return -->
+	<beans:bean id="bizTxExceptionCatcherAdvice" class="com.vod.biz.service.impl.BizTxExceptionCatcherAdvice" />
+
+	<aop:config>
+		<aop:pointcut id="defaultBizServiceTxOperation" expression="execution(* com.vod.biz.service..*ServiceTx.*Tx(..))" />
+		<aop:advisor pointcut-ref="defaultBizServiceTxOperation" advice-ref="bizTxExceptionCatcherAdvice" />
+	</aop:config>
+
+	<aop:config>
+		<aop:pointcut id="defaultBizServiceTxOperation" expression="execution(* com.vod.biz.service..*ServiceTx.*Tx(..))" />
+		<aop:advisor pointcut-ref="defaultBizServiceTxOperation" advice-ref="defaultTxAdvice" />
+	</aop:config>
+
+	<aop:config>
+		<aop:pointcut id="seqNoTxOperationPc" expression="within(com.vod.common.util..*)" />
+		<aop:advisor pointcut-ref="seqNoTxOperationPc" advice-ref="noTxAdvice" />
+	</aop:config>
+
+	<tx:advice id="defaultTxAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED" timeout="-1" read-only="false" />
+			<tx:method name="*RUTx" propagation="REQUIRED" isolation="READ_UNCOMMITTED" timeout="-1" read-only="false" />
+			<!-- method exceptions -->
+		</tx:attributes>
+	</tx:advice>
+
+	<tx:advice id="noTxAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="NOT_SUPPORTED" isolation="DEFAULT" timeout="-1" read-only="false" />
+			<!-- method exceptions -->
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR 250's 
+		@PostConstruct, @PreDestroy and @Resource (if available) and JPA's @PersistenceContext and @PersistenceUnit (if available). -->
+	<!-- <context:annotation-config/> -->
+
+	<!-- Instruct Spring to perform automatic transaction management on annotated classes. The SimpleJdbcClinic implementation 
+		declares @Transactional annotations. "proxy-target-class" is set because of SimpleJdbcClinic's @ManagedOperation usage. You 
+		can omit the transaction-manager attribute in the <tx:annotation-driven/> tag if the bean name of the PlatformTransactionManager 
+		that you want to wire in has the name transactionManager. -->
+	<!-- We don't use annotation-driven tx control <tx:annotation-driven transaction-manager="txManager"/> -->
+
+</beans:beans>

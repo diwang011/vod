@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <!-- Configurer that replaces ${...} placeholders with values from a properties 
+    file -->
+  <context:property-placeholder location="/WEB-INF/config/configure.properties" />
+  <!-- <context:property-placeholder location="/WEB-INF/config/ebay.properties"/> -->
+  <!-- Root Context: defines shared resources visible to all other web components -->
+
+  <beans:import resource="db/jdbc.xml" />
+  <beans:import resource="db/mapper.xml" />
+  <beans:import resource="db/service.xml" />
+<!--   <beans:import resource="db/tx.xml" /> -->
+  <beans:import resource="biz/bizservice.xml" />
+  <beans:import resource="servlet/servlet-service.xml"/>
+  <!-- Internationalization begin -->
+  <!-- resource files -->
+
+<!--   <beans:bean id="messageSource" -->
+<!--     class="org.springframework.context.support.ResourceBundleMessageSource"> -->
+<!--   <beans:property name="basename" -->
+<!--       value="com.omniselling.i18n/ApplicationResource" /> -->
+<!--   </beans:bean> -->
+
+  <beans:bean class="com.vod.common.util.SpringContextUtils">
+  </beans:bean>
+
+<!--   <beans:bean id="omniAccessFilter" class="com.omniselling.filter.OmniAccessFilter">   -->
+<!-- 	<beans:property name="syncWhiteList" value="${sync.whitelist}" /> -->
+<!-- 	<beans:property name="syncBlackList" value="${sync.blacklist}" /> -->
+<!--   </beans:bean> -->
+
+<!--   <beans:bean id="emailService" class="com.vod.common.util.EmailService"> -->
+<!--     <beans:property name="server" value="${email.server}" /> -->
+<!--     <beans:property name="port" value="${email.server.port}" /> -->
+<!--     <beans:property name="userName" value="${email.username}" /> -->
+<!--     <beans:property name="password" value="${email.password}" /> -->
+<!--     <beans:property name="from" value="${email.from}" /> -->
+<!--     <beans:property name="ttls" value="${email.ttls}" /> -->
+<!--   </beans:bean> -->
+
+
+<!--   <beans:bean id="i18nResourceContainer" -->
+<!--     class="com.omniselling.common.util.cache.I18nResourceContainer"> -->
+<!--   </beans:bean> -->
+<!--   <beans:bean id="categoryContainer" -->
+<!--     class="com.omniselling.common.util.cache.CategoryContainer"> -->
+<!--   </beans:bean> -->
+<!--   <beans:bean id="categorySpecContainer" -->
+<!--     class="com.omniselling.common.util.cache.CategorySpecContainer"> -->
+<!--   </beans:bean> -->
+</beans:beans>
+
